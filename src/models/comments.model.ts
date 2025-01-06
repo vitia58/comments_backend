@@ -18,7 +18,7 @@ export class Comment {
   @Prop()
   text: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, required: false })
+  @Prop({ type: SchemaTypes.ObjectId, required: false, index: true })
   topic: Types.ObjectId;
 
   @Prop({ required: false })
