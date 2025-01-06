@@ -1,25 +1,29 @@
 module.exports = {
+  env: {
+    browser: false,
+    es2021: true,
+  },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
-    tsconfigRootDir: __dirname,
+    ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  root: true,
-  env: {
-    node: true,
-    jest: true,
-  },
-  ignorePatterns: ['.eslintrc.js'],
+  plugins: ['@typescript-eslint'],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
+    quotes: ['warn', 'single'],
+    semi: ['error', 'always'],
+    eqeqeq: 'off',
+    'constructor-super': 'error',
+    'no-cond-assign': 'error',
+    'no-constant-binary-expression': 'warn',
+    'no-constant-condition': 'warn',
+    'no-irregular-whitespace': 'warn',
+    'no-this-before-super': 'warn',
+    'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
+    'max-classes-per-file': ['warn', 10],
+    'no-else-return': 'warn',
+    'no-return-await': 'warn',
+    'lines-between-class-members': 'warn',
+    
   },
 };
