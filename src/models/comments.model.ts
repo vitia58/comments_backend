@@ -32,8 +32,8 @@ export class Comment {
 
   replies?: Comment[];
 
-  @Prop()
-  createdAt: Date;
+  @Prop({ default: Date.now, type: SchemaTypes.Number })
+  date: number;
 }
 
 export type CommentDocument = Omit<Comment, 'children'> & Document;

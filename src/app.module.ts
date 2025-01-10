@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommentsModule } from './comments/comments.module';
+import { SocketModule } from './socket/socket.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { CommentsModule } from './comments/comments.module';
       }),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot(),
     CommentsModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

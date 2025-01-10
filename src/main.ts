@@ -6,10 +6,12 @@ import {
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useWebSocketAdapter(new IoAdapter(app.getHttpServer()));
   const config = new DocumentBuilder()
     .setTitle('Comments test')
     .setDescription('Comments test API')
