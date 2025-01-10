@@ -4,6 +4,7 @@ import {
   MongoTransform,
   OptionalTransform,
 } from 'src/common/helpers/transform.helpers';
+import { IsValidHTML } from 'src/common/validators/isValidHtml';
 
 export class CreateMessageDto {
   @IsString()
@@ -17,6 +18,7 @@ export class CreateMessageDto {
   homepage?: string;
 
   @IsString()
+  @IsValidHTML()
   text: string;
 
   @OptionalTransform()
