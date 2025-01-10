@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Comment, CommentDocument } from 'src/models/comments.model';
 import { CreateMessageDto } from './dto/createComment.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectModel(Comment.name)
     private readonly commentModel: Model<CommentDocument>,
+    private readonly emitter: EventEmitter2,
   ) {}
 
   async findAll(topic: string, offset: number, limit: number) {
@@ -61,6 +63,8 @@ export class CommentsService {
   }
 
   async create(comment: CreateMessageDto) {
-    return this.commentModel.create(comment);
+    const newComment = await this.commentModel.create(comment);
+    this.emitter.emit('comment.created', newComment);
+    return newComment;
   }
 }
