@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CommentsModule } from './comments/comments.module';
 import { SocketModule } from './socket/socket.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot(),
     CommentsModule,
     SocketModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

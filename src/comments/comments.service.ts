@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Comment, CommentDocument } from 'src/models/comments.model';
 import { CreateMessageDto } from './dto/createComment.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class CommentsService {
@@ -11,6 +12,7 @@ export class CommentsService {
     @InjectModel(Comment.name)
     private readonly commentModel: Model<CommentDocument>,
     private readonly emitter: EventEmitter2,
+    private readonly filesService: FilesService,
   ) {}
 
   async findAll(topic: string, offset: number, limit: number) {
@@ -25,9 +27,14 @@ export class CommentsService {
     let root: Comment = null;
     const replyMap = new Map();
 
-    replies.forEach((comment) => {
-      replyMap.set(comment._id.toString(), comment);
-    });
+    const promise = Promise.all(
+      replies.map(async (comment) => {
+        replyMap.set(comment._id.toString(), comment);
+        if (comment.file) {
+          comment.file = await this.filesService.getSignedUrl(comment.file);
+        }
+      }),
+    );
 
     replies.forEach((comment) => {
       if (!comment.parent) return (root = comment);
@@ -58,6 +65,7 @@ export class CommentsService {
     };
     traverse(root);
     console.timeEnd('find');
+    await promise;
 
     return root;
   }
