@@ -1,5 +1,7 @@
-import { IsString, IsEmail, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsEmail, IsUrl, ValidateNested } from 'class-validator';
 import { Types } from 'mongoose';
+import { CaptchaVerifyDto } from 'src/captcha/dto/captchaVerify.dto';
 import {
   MongoTransform,
   OptionalTransform,
@@ -27,4 +29,8 @@ export class CreateMessageDto {
 
   @MongoTransform()
   parent?: Types.ObjectId;
+
+  @ValidateNested()
+  @Type(() => CaptchaVerifyDto)
+  captcha: CaptchaVerifyDto;
 }

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Comment, CommentDocument } from 'src/models/comments.model';
 import { CreateMessageDto } from './dto/createComment.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FilesService } from 'src/files/files.service';
+import { CaptchaService } from 'src/captcha/captcha.service';
 
 @Injectable()
 export class CommentsService {
@@ -13,6 +14,7 @@ export class CommentsService {
     private readonly commentModel: Model<CommentDocument>,
     private readonly emitter: EventEmitter2,
     private readonly filesService: FilesService,
+    private readonly captchaService: CaptchaService,
   ) {}
 
   async findAll(topic: string, offset: number, limit: number) {
@@ -71,8 +73,18 @@ export class CommentsService {
   }
 
   async create(comment: CreateMessageDto) {
+    if (!this.captchaService.verify(comment.captcha)) {
+      throw new BadRequestException('Invalid captcha');
+    }
+
+    const fileLinkPromise = this.filesService.getSignedUrl(comment.file, true);
+
     const newComment = await this.commentModel.create(comment);
+
+    newComment.file = await fileLinkPromise;
+
     this.emitter.emit('comment.created', newComment);
+
     return newComment;
   }
 }
