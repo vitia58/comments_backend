@@ -1,4 +1,8 @@
-import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { BadRequestException, Injectable, UploadedFile } from '@nestjs/common';
 import { InjectS3, S3 } from 'nestjs-s3';
@@ -46,14 +50,28 @@ export class FilesService {
     return fileName;
   }
 
-  async getSignedUrl(file: string) {
+  async getSignedUrl(file: string, verify = false) {
     const get_command = new GetObjectCommand({
       Bucket: this.configService.get('s3_bucket'),
       Key: file,
       ResponseContentType: mime.lookup(file) as string,
     });
 
-    const url = await getSignedUrl(this.s3, get_command, { expiresIn: 3600 });
-    return url;
+    const urlPromise = getSignedUrl(this.s3, get_command, { expiresIn: 3600 });
+
+    if (verify) {
+      await this.s3
+        .send(
+          new HeadObjectCommand({
+            Bucket: this.configService.get('s3_bucket'),
+            Key: file,
+          }),
+        )
+        .catch(() => {
+          throw new BadRequestException('File not found');
+        });
+    }
+
+    return urlPromise;
   }
 }
