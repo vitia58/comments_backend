@@ -23,7 +23,12 @@ export class SocketGateway {
   }
 
   @OnEvent('comment.created')
-  handleOrderCreatedEvent(payload: Comment) {
+  sendNewComment(payload: Comment) {
     this.server.to(payload.topic.toString()).emit('newComment', payload);
+  }
+
+  @OnEvent('topic.created')
+  sendNewTopic(payload: Comment) {
+    this.server.emit('newTopic', payload);
   }
 }

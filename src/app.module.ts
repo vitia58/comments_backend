@@ -8,6 +8,7 @@ import { SocketModule } from './socket/socket.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilesModule } from './files/files.module';
 import { CaptchaModule } from './captcha/captcha.module';
+import { TopicsModule } from './topics/topics.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CaptchaModule } from './captcha/captcha.module';
     SocketModule,
     FilesModule,
     CaptchaModule,
+    TopicsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

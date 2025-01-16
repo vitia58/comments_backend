@@ -4,7 +4,12 @@ import {
   HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { BadRequestException, Injectable, UploadedFile } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnsupportedMediaTypeException,
+  UploadedFile,
+} from '@nestjs/common';
 import { InjectS3, S3 } from 'nestjs-s3';
 import * as sharp from 'sharp';
 import * as mime from 'mime-types';
@@ -18,15 +23,19 @@ export class FilesService {
   ) {}
 
   async validateImage(file: Express.Multer.File) {
-    const image = sharp(file.buffer);
+    try {
+      const image = sharp(file.buffer);
 
-    const metadata = await image.metadata();
-    if (metadata.width > 320 || metadata.height > 240) {
-      if (metadata.width / 320 > metadata.height / 240) {
-        image.resize({ width: 320 });
-      } else image.resize({ height: 240 });
+      const metadata = await image.metadata();
+      if (metadata.width > 320 || metadata.height > 240) {
+        if (metadata.width / 320 > metadata.height / 240) {
+          image.resize({ width: 320 });
+        } else image.resize({ height: 240 });
 
-      file.buffer = await image.toBuffer();
+        file.buffer = await image.toBuffer();
+      }
+    } catch (e) {
+      throw new UnsupportedMediaTypeException('Invalid image');
     }
   }
 

@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { IsString, IsEmail, IsUrl, ValidateNested } from 'class-validator';
 import { Types } from 'mongoose';
 import { CaptchaVerifyDto } from 'src/captcha/dto/captchaVerify.dto';
@@ -33,4 +33,7 @@ export class CreateMessageDto {
   @ValidateNested()
   @Type(() => CaptchaVerifyDto)
   captcha: CaptchaVerifyDto;
+
+  @Exclude()
+  topic: Types.ObjectId;
 }
