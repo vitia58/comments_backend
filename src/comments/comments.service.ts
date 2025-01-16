@@ -81,9 +81,21 @@ export class CommentsService {
 
     const newComment = await this.commentModel.create(comment);
 
+    if (!newComment.parent) {
+      newComment.topic = newComment._id;
+    }
+
+    await newComment.save();
+
     newComment.file = await fileLinkPromise;
 
-    this.emitter.emit('comment.created', newComment);
+    if (comment.parent) this.emitter.emit('comment.created', newComment);
+
+    const { _id, name, email, text, date } = newComment.toObject();
+
+    if (!comment.parent) {
+      this.emitter.emit('topic.created', { _id, name, email, text, date });
+    }
 
     return newComment;
   }
