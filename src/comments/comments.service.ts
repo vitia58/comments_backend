@@ -77,7 +77,9 @@ export class CommentsService {
       throw new BadRequestException('Invalid captcha');
     }
 
-    const fileLinkPromise = this.filesService.getSignedUrl(comment.file, true);
+    const fileLinkPromise = this.filesService.getSignedUrl(comment.file, {
+      verify: true,
+    });
 
     const newComment = await this.commentModel.create(comment);
 

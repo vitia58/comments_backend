@@ -2,13 +2,13 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   BadRequestException,
   Injectable,
   UnsupportedMediaTypeException,
-  UploadedFile,
 } from '@nestjs/common';
 import { InjectS3, S3 } from 'nestjs-s3';
 import * as sharp from 'sharp';
@@ -45,7 +45,7 @@ export class FilesService {
     }
   }
 
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(file: Express.Multer.File) {
     const fileName = file.originalname.replace(/^[^.]*/, Date.now().toString());
 
     await this.s3.send(
@@ -59,14 +59,20 @@ export class FilesService {
     return fileName;
   }
 
-  async getSignedUrl(file: string, verify = false) {
+  async getSignedUrl(
+    file: string,
+    {
+      verify = false,
+      expiresIn = 3600,
+    }: { verify?: boolean; expiresIn?: number } = {},
+  ) {
     const get_command = new GetObjectCommand({
       Bucket: this.configService.get('s3_bucket'),
       Key: file,
       ResponseContentType: mime.lookup(file) as string,
     });
 
-    const urlPromise = getSignedUrl(this.s3, get_command, { expiresIn: 3600 });
+    const urlPromise = getSignedUrl(this.s3, get_command, { expiresIn });
 
     if (verify) {
       await this.s3
@@ -82,5 +88,14 @@ export class FilesService {
     }
 
     return urlPromise;
+  }
+
+  async deleteFile(file: string) {
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.configService.get('s3_bucket'),
+        Key: file,
+      }),
+    );
   }
 }

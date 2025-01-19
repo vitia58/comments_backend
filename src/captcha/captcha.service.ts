@@ -1,33 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { createHmac } from 'crypto';
 import { CaptchaVerifyDto } from './dto/captchaVerify.dto';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class CaptchaService {
-  async create() {
-    const { data } = await axios.get<{ solution: string; image_url: string }>(
-      'https://captcha-generator.p.rapidapi.com/',
-      {
-        params: {
-          noise_number: '10',
-          fontname: 'sora',
-        },
-        headers: {
-          'x-rapidapi-key':
-            '8279d30122msh0abb0255c34f280p1d0957jsn7eea988a2d65',
-          'x-rapidapi-host': 'captcha-generator.p.rapidapi.com',
-        },
-      },
-    );
+  constructor(@Inject('CAPTCHA_SERVICE') private client: ClientProxy) {}
 
-    const result = {
-      hash: this.generateHash(data.solution),
-      image: data.image_url,
-    };
-    console.log(data.solution.toLocaleLowerCase());
-
-    return result;
+  create() {
+    return this.client.send('get_captcha', {});
   }
 
   verify(data: CaptchaVerifyDto) {
