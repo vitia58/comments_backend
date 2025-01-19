@@ -14,7 +14,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
     ConfigModule.forRoot({
-      envFilePath: ['../.env'],
+      envFilePath: ['.env'],
     }),
     CaptchaModule,
     FilesModule,

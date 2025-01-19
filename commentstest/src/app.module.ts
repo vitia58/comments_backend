@@ -13,7 +13,7 @@ import { TopicsModule } from './topics/topics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['../.env'],
+      envFilePath: ['.env'],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

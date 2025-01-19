@@ -1,4 +1,5 @@
 import { Processor, Process } from '@nestjs/bull';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { Job } from 'bull';
@@ -6,6 +7,7 @@ import { createHmac } from 'crypto';
 import Redis from 'ioredis';
 import { FilesService } from 'src/files/files.service';
 
+@Injectable()
 @Processor('captchas')
 export class CaptchaProcessor {
   private readonly redisClient: Redis;
