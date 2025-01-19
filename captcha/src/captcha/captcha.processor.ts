@@ -1,10 +1,25 @@
+import { Processor, Process } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { Job } from 'bull';
 import { createHmac } from 'crypto';
-import { CaptchaVerifyDto } from './dto/captchaVerify.dto';
+import Redis from 'ioredis';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
-export class CaptchaService {
+@Processor('captchas')
+export class CaptchaProcessor {
+  private readonly redisClient: Redis;
+
+  constructor(
+    private readonly filesService: FilesService,
+    configService: ConfigService,
+  ) {
+    this.redisClient = new Redis(configService.get('REDIS_URI'));
+  }
+
+  @Process('create')
   async create() {
     const { data } = await axios.get<{ solution: string; image_url: string }>(
       'https://captcha-generator.p.rapidapi.com/',
@@ -21,17 +36,19 @@ export class CaptchaService {
       },
     );
 
+    const key = await this.filesService.uploadFile(data.image_url);
+
     const result = {
       hash: this.generateHash(data.solution),
-      image: data.image_url,
+      key,
     };
-    console.log(data.solution.toLocaleLowerCase());
 
-    return result;
+    await this.redisClient.lpush('captchas', JSON.stringify(result));
   }
 
-  verify(data: CaptchaVerifyDto) {
-    return this.generateHash(data.text) === data.hash;
+  @Process('delete')
+  async delete(job: Job<{ key: string }>) {
+    this.filesService.deleteFile(job.data.key);
   }
 
   generateHash(text: string) {
