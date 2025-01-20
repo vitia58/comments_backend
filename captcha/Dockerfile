@@ -3,7 +3,7 @@ FROM node:latest
 WORKDIR /captcha
 
 ENV REDIS_URI=redis://redis:6379
-ENV RABBITMQ_URI=amqp://rabbitmq:5672
+ENV RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
 
 COPY "package*.json" . 
 
