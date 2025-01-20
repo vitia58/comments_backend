@@ -12,7 +12,6 @@ export class CaptchaService {
   }
 
   verify(data: CaptchaVerifyDto) {
-    return true;
     return this.generateHash(data.text) === data.hash;
   }
 
