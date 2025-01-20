@@ -17,4 +17,4 @@ if [ ! -f captcha/.env ]; then
     ln .env captcha/
 fi
 
-docker-compose up -d
+sudo docker-compose up -d
