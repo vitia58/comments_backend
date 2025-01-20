@@ -6,7 +6,7 @@ services:
       context: ./commentstest
       dockerfile: Dockerfile
     ports:
-      - "127.0.0.24:3000:3000"
+      - "3000:3000"
     depends_on:
       - redis
       - mongodb
@@ -23,7 +23,7 @@ services:
   frontend:
     image: nginx:latest
     ports:
-      - "127.0.0.24:80:80"
+      - "80:80"
     volumes:
       - ./client:/usr/share/nginx/html:ro
     restart: always
@@ -31,14 +31,14 @@ services:
   mongodb:
     image: mongo:6.0
     ports:
-      - "127.0.0.24:27017:27017"
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
 
   redis:
     image: redis:latest
     ports:
-      - "127.0.0.24:6379:6379"
+      - "6379:6379"
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
@@ -48,8 +48,8 @@ services:
     hostname: rabbitmq
     container_name: rabbitmq
     ports:
-      - "127.0.0.24:5672:5672"
-      - "127.0.0.24:15672:15672"
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
