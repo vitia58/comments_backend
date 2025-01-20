@@ -28,8 +28,9 @@ export class CaptchaService {
 
     const nextEntry = await this.redisClient.brpop('captchas', 0);
 
-    const { hash, key } = JSON.parse(nextEntry[1]) as {
+    const { hash, solution, key } = JSON.parse(nextEntry[1]) as {
       hash: string;
+      solution: string;
       key: string;
     };
 
@@ -37,7 +38,7 @@ export class CaptchaService {
 
     await this.captchaQueue.add('delete', { key }, { delay: 60000 });
 
-    return { hash, image };
+    return { hash, solution, image };
   }
 
   generateHash(text: string) {

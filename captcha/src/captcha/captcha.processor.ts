@@ -40,6 +40,7 @@ export class CaptchaProcessor {
 
     const result = {
       hash: this.generateHash(data.solution),
+      solution: data.solution,
       key,
     };
 
