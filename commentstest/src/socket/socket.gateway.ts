@@ -19,7 +19,9 @@ export class SocketGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: string,
   ) {
+    client.leave(client.data.topic);
     client.join(payload);
+    client.data.topic = payload;
   }
 
   @OnEvent('comment.created')

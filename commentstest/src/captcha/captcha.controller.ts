@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { CaptchaService } from './captcha.service';
 import { CaptchaVerifyDto } from './dto/captchaVerify.dto';
 

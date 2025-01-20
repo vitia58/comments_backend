@@ -2,8 +2,9 @@ FROM node:latest
 
 WORKDIR /comments
 
+ENV REDIS_URI=redis://redis:6379
 ENV MONGODB_URI=mongodb://mongodb:27017/comments
-ENV RABBITMQ_URI=amqp://rabbitmq:5672
+ENV RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672
 
 COPY "package*.json" . 
 
